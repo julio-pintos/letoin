@@ -1,5 +1,7 @@
 class LtiController < ApplicationController
 
+  protect_from_forgery except: [:tool_return, :grade_passback]
+
   def index
   end
 
@@ -45,7 +47,7 @@ class LtiController < ApplicationController
     @consumer.tool_consumer_instance_name = "Frankie"
 
     if params['assignment']
-      @consumer.lis_outcome_service_url = host + '/grade_passback'
+      @consumer.lis_outcome_service_url = host + '/lti/grade_passback'
       @consumer.lis_result_sourcedid = "oi"
     end
 
