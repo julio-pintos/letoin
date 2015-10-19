@@ -34,11 +34,13 @@ class LtiController < ApplicationController
     # Set some launch data from: http://www.imsglobal.org/LTI/v1p1pd/ltiIMGv1p1pd.html#_Toc309649684
     # Only this first one is required, the rest are recommended
     @consumer.resource_link_id = "thisisuniquetome"
-    @consumer.launch_presentation_return_url = host + '/tool_return'
+    @consumer.launch_presentation_return_url = host + '/lti/tool_return'
     @consumer.lis_person_name_given = session['username']
     @consumer.user_id = Digest::MD5.hexdigest(session['username'])
     @consumer.roles = "learner"
     @consumer.context_id = "bestcourseever"
+    @consumer.context_label = "Best Course"
+    @consumer.context_type = "Course"
     @consumer.context_title = "Example Sinatra Tool Consumer"
     @consumer.tool_consumer_instance_name = "Frankie"
 
@@ -48,8 +50,6 @@ class LtiController < ApplicationController
     end
 
     @autolaunch = !!params['autolaunch']
-
-    redirect_to action: :tool_launch
   end
 
   def tool_return
@@ -70,7 +70,7 @@ class LtiController < ApplicationController
     sourcedid = req.lis_result_sourcedid
 
     # todo - create some simple key management system
-    consumer = IMS::LTI::ToolConsumer.new('test', 'secret')
+    consumer = IMS::LTI::ToolConsumer.new('jisc.ac.uk', 'secret')
 
     if consumer.valid_request?(request)
       if consumer.request_oauth_timestamp.to_i - Time.now.utc.to_i > 60*60
