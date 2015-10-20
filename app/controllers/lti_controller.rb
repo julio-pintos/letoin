@@ -104,8 +104,9 @@ class LtiController < ApplicationController
           res.description = "#{req.operation} is not supported"
         end
 
-        headers 'Content-Type' => 'text/xml'
-        res.generate_response_xml
+        #headers 'Content-Type' => 'text/xml'
+        #res.generate_response_xml
+        render xml: res.generate_response_xml
       else
         throw_oauth_error
       end
@@ -115,5 +116,8 @@ class LtiController < ApplicationController
     puts e.message
     puts e.backtrace
     puts "----------"
+    headers 'Content-Type' => 'text/xml'
+    res = IMS::LTI::OutcomeResponse.new
+    render xml: res.generate_response_xml
   end
 end
