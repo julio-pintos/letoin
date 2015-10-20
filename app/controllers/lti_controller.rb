@@ -114,9 +114,11 @@ class LtiController < ApplicationController
   rescue Exception => e
     puts "----------"
     puts e.message
+    puts "-##-"
+    puts e.class.name
+    puts "--##--"
     puts e.backtrace
     puts "----------"
-    headers 'Content-Type' => 'text/xml'
     res = IMS::LTI::OutcomeResponse.new
     render xml: res.generate_response_xml
   end
