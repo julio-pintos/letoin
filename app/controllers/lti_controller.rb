@@ -73,40 +73,44 @@ class LtiController < ApplicationController
 
     # todo - create some simple key management system
     consumer = IMS::LTI::ToolConsumer.new('jisc.ac.uk', 'secret')
+    begin
 
-    if consumer.valid_request?(request)
-      if consumer.request_oauth_timestamp.to_i - Time.now.utc.to_i > 60*60
-        throw_oauth_error
-      end
-      # this isn't actually checking anything like it should, just want people
-      # implementing real tools to be aware they need to check the nonce
-      if was_nonce_used_in_last_x_minutes?(consumer.request_oauth_nonce, 60)
-        throw_oauth_error
-      end
+      if consumer.valid_request?(request)
+        if consumer.request_oauth_timestamp.to_i - Time.now.utc.to_i > 60*60
+          throw_oauth_error
+        end
+        # this isn't actually checking anything like it should, just want people
+        # implementing real tools to be aware they need to check the nonce
+        if was_nonce_used_in_last_x_minutes?(consumer.request_oauth_nonce, 60)
+          throw_oauth_error
+        end
 
-      res = IMS::LTI::OutcomeResponse.new
-      res.message_ref_identifier = req.message_identifier
-      res.operation = req.operation
-      res.code_major = 'success'
-      res.severity = 'status'
-
-      if req.replace_request?
-        res.description = "Your old score of 0 has been replaced with #{req.score}"
-      elsif req.read_request?
-        res.description = "You score is 50"
-        res.score = 50
-      elsif req.delete_request?
-        res.description = "You score has been cleared"
-      else
-        res.code_major = 'unsupported'
+        res = IMS::LTI::OutcomeResponse.new
+        res.message_ref_identifier = req.message_identifier
+        res.operation = req.operation
+        res.code_major = 'success'
         res.severity = 'status'
-        res.description = "#{req.operation} is not supported"
-      end
 
-      headers 'Content-Type' => 'text/xml'
-      res.generate_response_xml
-    else
-      throw_oauth_error
+        if req.replace_request?
+          res.description = "Your old score of 0 has been replaced with #{req.score}"
+        elsif req.read_request?
+          res.description = "You score is 50"
+          res.score = 50
+        elsif req.delete_request?
+          res.description = "You score has been cleared"
+        else
+          res.code_major = 'unsupported'
+          res.severity = 'status'
+          res.description = "#{req.operation} is not supported"
+        end
+
+        headers 'Content-Type' => 'text/xml'
+        res.generate_response_xml
+      else
+        throw_oauth_error
+      end
+    rescue => e
+      p e.message
+      p e.backtrace
     end
-  end
 end
