@@ -114,5 +114,6 @@ class LtiController < ApplicationController
     puts "----------"
     puts e.message
     puts e.backtrace
+    puts "----------"
   end
 end
