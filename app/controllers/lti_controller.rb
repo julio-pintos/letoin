@@ -109,8 +109,9 @@ class LtiController < ApplicationController
       else
         throw_oauth_error
       end
-    rescue => e
-      p e.message
-      p e.backtrace
     end
+  rescue => e
+    p e.message
+    p e.backtrace
+  end
 end
