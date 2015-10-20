@@ -111,7 +111,8 @@ class LtiController < ApplicationController
       end
     end
   rescue => e
-    p e.message
-    p e.backtrace
+    puts "----------"
+    puts e.message
+    puts e.backtrace
   end
 end
