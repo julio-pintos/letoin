@@ -110,7 +110,7 @@ class LtiController < ApplicationController
         throw_oauth_error
       end
     end
-  rescue => e
+  rescue Exception => e
     puts "----------"
     puts e.message
     puts e.backtrace
